@@ -10,7 +10,7 @@ function App() {
   // Init
   stringeeClient = new StringeeClient();
 
-  stringeeClient.connect('eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtLTE2NTY1NTg3NzIiLCJpc3MiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtIiwiZXhwIjoxNjU5MTUwNzcyLCJ1c2VySWQiOiJ0aGluZDl4In0.56DDkRh8M1K_jdQoN6xLm_qhkFXW0IMwXeLP5vIId1Q');
+  stringeeClient.connect('eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtLTE2NTY2NDYxNjAiLCJpc3MiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtIiwiZXhwIjoxNjU2NzMyNTYwLCJ1c2VySWQiOiJTdHJpbmdlZVR1YW50ZXN0In0.1bRfjEemyEnSNUsK2If4VezLhqgPKHHhNVK1VPIZRko');
 
   // init
   var stringeeChat = new StringeeChat(stringeeClient);
@@ -47,37 +47,6 @@ function App() {
 
   },[stringeeClient])
 
-  useMemo(() => {
-    stringeeChat.createConversation(userIds, options, (status:any, code:any, message:any, conv:any) => {
-      console.log('status:' + status + ' code:' + code + ' message:' + message + ' conv:' + JSON.stringify(conv));
-    });
-
-
-    stringeeChat.sendMessage(txtMsg, function (status:any, code:any, message:any, msg:any) {
-      console.log(status + code + message + "msg result " + JSON.stringify(msg));
-    });
-  }, [options,stringeeChat,userIds]);
-  const apiKeySid = 'AC3f62d69e974a7e404329c3f1be3237c3';
-  const apiKeySecret = "fd4d91bbc809c5eb88b53f6824e97db1";
-  // function getAccessToken() {
-  //   var now = Math.floor(Date.now() / 1000);
-  //   var exp = now + 3600;
-  //
-  //   var header = {cty: "stringee-api;v=1"};
-  //   var payload = {
-  //     jti: apiKeySid + "-" + now,
-  //     iss: apiKeySid,
-  //     exp: exp,
-  //     rest_api: 1
-  //   };
-  //
-  //   var jwt = require('jsonwebtoken');
-  //   var token = jwt.sign(payload, apiKeySecret, {algorithm: 'HS256', header: header})
-  //   return token;
-  // }
-  //
-  // const token = getAccessToken();
-  // console.log(token)
 
   return (
     <div className="App">
