@@ -10,7 +10,7 @@ function App() {
   // Init
   stringeeClient = new StringeeClient();
 
-  stringeeClient.connect('eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtLTE2NTY2NDYxNjAiLCJpc3MiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtIiwiZXhwIjoxNjU2NzMyNTYwLCJ1c2VySWQiOiJTdHJpbmdlZVR1YW50ZXN0In0.1bRfjEemyEnSNUsK2If4VezLhqgPKHHhNVK1VPIZRko');
+  stringeeClient.connect('eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtLTE2NTcyNzA1MjYiLCJpc3MiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtIiwiZXhwIjoxNjU3MzU2OTI2LCJ1c2VySWQiOiJTdHJpbmdlZVR1YW50ZXN0In0.aOYkoeWkQDWu_4QI3Dd7egGRYD4H4G6CUum8K9Lkwlo');
 
   // init
   var stringeeChat = new StringeeChat(stringeeClient);
@@ -32,21 +32,27 @@ function App() {
     }
   };
 
+  stringeeClient.on('connect', function () {
+    console.log('++++++++++++++ connected to StringeeServer');
+  });
+  stringeeClient.on('authen', function () {
+    console.log('authen');
+  });
+  stringeeClient.on('otherdeviceauthen', function () {
+    console.log('authen');
+  });
 
 
-  useEffect(()=>{
-    stringeeClient.on('connect', function () {
-      console.log('++++++++++++++ connected to StringeeServer');
-    });
-    stringeeClient.on('authen', function () {
-      console.log('authen');
-    });
-    stringeeClient.on('otherdeviceauthen', function () {
-      console.log('authen');
-    });
 
-  },[stringeeClient])
+  stringeeChat.sendMessage(txtMsg, function (status:any, code:any, message:any, msg:any) {
+    console.log(status)
+    console.log(status + code + message + "msg result " + JSON.stringify(txtMsg));
+  });
+  var userIds = ["user1"];
 
+  stringeeChat.createConversation(userIds, options, (status:any, code:any, message:any, conv:any) => {
+    console.log('status:' + status + ' code:' + code + ' message:' + message + ' conv:' + JSON.stringify(userIds));
+  });
 
   return (
     <div className="App">
