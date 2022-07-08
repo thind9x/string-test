@@ -10,7 +10,7 @@ function App() {
   // Init
   stringeeClient = new StringeeClient();
 
-  stringeeClient.connect('eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtLTE2NTcyNzA1MjYiLCJpc3MiOiJTS1ZMUllRY0Q2Z3p2d1d4MnZlRUdoMU1xZzZHaXAwYVFtIiwiZXhwIjoxNjU3MzU2OTI2LCJ1c2VySWQiOiJTdHJpbmdlZVR1YW50ZXN0In0.aOYkoeWkQDWu_4QI3Dd7egGRYD4H4G6CUum8K9Lkwlo');
+  stringeeClient.connect('eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS21YUG1kOEpaejJ1WUh6eWpTWTN5c3p3emFvMWFIN1VnLTE2NTcyNTM3MTkiLCJpc3MiOiJTS21YUG1kOEpaejJ1WUh6eWpTWTN5c3p3emFvMWFIN1VnIiwiZXhwIjoxNjU5ODQ1NzE5LCJ1c2VySWQiOiJQaGFtRGFuZ0tob2EifQ.bYzidvlKHsSOawM4lJdhIZN2tAxOqtVG3bEWWJax9fU');
 
   // init
   var stringeeChat = new StringeeChat(stringeeClient);
@@ -32,27 +32,20 @@ function App() {
     }
   };
 
-  stringeeClient.on('connect', function () {
-    console.log('++++++++++++++ connected to StringeeServer');
-  });
   stringeeClient.on('authen', function () {
-    console.log('authen');
-  });
-  stringeeClient.on('otherdeviceauthen', function () {
-    console.log('authen');
-  });
+    // khởi tạo stringeeChat ở đây
+    stringeeChat.sendMessage(txtMsg, function (status:any, code:any, message:any, msg:any) {
+      console.log(status + code + message + "msg result " + JSON.stringify(msg));
+    });
+    stringeeChat.createConversation(userIds, options, (status:any, code:any, message:any, conv:any) => {
+      console.log('status:' + status + ' code:' + code + ' message:' + message + ' conv:' + JSON.stringify(userIds));
+    });
+  })
 
 
 
-  stringeeChat.sendMessage(txtMsg, function (status:any, code:any, message:any, msg:any) {
-    console.log(status)
-    console.log(status + code + message + "msg result " + JSON.stringify(txtMsg));
-  });
-  var userIds = ["user1"];
 
-  stringeeChat.createConversation(userIds, options, (status:any, code:any, message:any, conv:any) => {
-    console.log('status:' + status + ' code:' + code + ' message:' + message + ' conv:' + JSON.stringify(userIds));
-  });
+
 
   return (
     <div className="App">
