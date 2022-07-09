@@ -47,10 +47,13 @@ body {
     position: relative;
     left: -25px;
   }
-
+  .listUl {
+    list-style-type: none;
+  }
   ul {
     padding: 20px;
     height: 770px;
+    list-style-type: none !important;
 
     li {
       padding-bottom: 20px;
@@ -72,6 +75,9 @@ body {
 
   .status {
     color: $gray;
+  }
+  ul {
+    list-style-type: none !important ;
   }
 }
 
@@ -244,4 +250,33 @@ body {
   content: " ";
   clear: both;
   height: 0;
+}
+ul {
+  list-style-type: none;
+}
+.rotate {
+  animation: rotate-keyframes 1s;
+}
+
+@keyframes rotate-keyframes {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(212deg);
+  }
+}
+.rotateComment {
+  animation: rotate-keyframesComment 1s;
+}
+
+@keyframes rotate-keyframesComment {
+  from {
+    transform: rotate(212deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
 }
