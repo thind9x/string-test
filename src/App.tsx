@@ -252,7 +252,7 @@ function App() {
                     height: "100%",
                     color: "black",
                   }}
-                  className="rotate fas fa-times"
+                  className="fas fa-times"
                   aria-hidden="true"
                 ></i>
               </button>
