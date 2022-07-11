@@ -3,16 +3,30 @@ import logo from "./logo.svg";
 import "./nam.scss";
 // @ts-ignore
 import { StringeeClient, StringeeChat } from "stringee-chat-js-sdk";
-import { transform } from "typescript";
-function App() {
+import { connect } from "react-redux";
+import { getMessages } from "./reduxAction/actions";
+interface AppProps {
+  dispatch: (data: any) => void;
+  mesagesData: {
+    lists: [];
+  };
+}
+
+const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isIcon, setIsIcon] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [msg, setMgs] = useState<string>("");
+  const [isConnect, setConnect] = useState(false);
+  var userIds = ["user1", "user2"];
+  var options = {
+    name: "Your conversation name",
+    isDistinct: false,
+    isGroup: true,
+  };
+
+  const [msgcontent, setMgsContent] = useState<any>({});
   let stringeeClient: {
-    on: (
-      arg0: string,
-      arg1: { (): void; (res: any): void; (res: any): void }
-    ) => void;
+    on: (arg0: string, arg1: (res: any) => void) => void;
     connect: (data: string) => void;
   };
   // var stringeeClient;
@@ -20,7 +34,7 @@ function App() {
   stringeeClient = new StringeeClient();
 
   stringeeClient.connect(
-    "eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS21YUG1kOEpaejJ1WUh6eWpTWTN5c3p3emFvMWFIN1VnLTE2NTcyNTM3MTkiLCJpc3MiOiJTS21YUG1kOEpaejJ1WUh6eWpTWTN5c3p3emFvMWFIN1VnIiwiZXhwIjoxNjU5ODQ1NzE5LCJ1c2VySWQiOiJQaGFtRGFuZ0tob2EifQ.bYzidvlKHsSOawM4lJdhIZN2tAxOqtVG3bEWWJax9fU"
+    "eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS0ZaZ2dBSEtNNTI4eEdLUDRTNVpXY25YcHdwYmhjYkItMTY1NzM2MDkyMyIsImlzcyI6IlNLRlpnZ0FIS001Mjh4R0tQNFM1Wldjblhwd3BiaGNiQiIsImV4cCI6MTY1OTk1MjkyMywidXNlcklkIjoidGhpbmQ5eCJ9.wXlyhcOPVs0eDLMTPmxZdR6xqsKm0oavcgi7Y5ukTfUsssss"
   );
 
   // init
@@ -43,20 +57,28 @@ function App() {
     },
   };
 
-  stringeeClient.on("authen", function () {
-    // khởi tạo stringeeChat ở đây
-    stringeeChat.sendMessage(
-      txtMsg,
-      function (status: any, code: any, message: any, msg: any) {
-        console.log(
-          status + code + message + "msg result " + JSON.stringify(msg)
-        );
-      }
-    );
-    stringeeChat.createConversation(
-      userIds,
-      options,
-      (status: any, code: any, message: any, conv: any) => {
+  useEffect(() => {
+    stringeeClient.on("authen", function (res: any) {
+      console.log(res);
+      // khởi tạo stringeeChat ở đây
+      setConnect(true);
+    });
+  }, []);
+  const onChangeMsg = (e: any) => {
+    setMgs(e?.target?.value);
+  };
+  const msgArr = [] as any;
+  const getMessage = async (data: any) => {
+    var convId = data;
+    var count = 50;
+    var isAscending = false;
+    var sequence = 10;
+    stringeeChat.getLastMessages(
+      convId,
+      sequence,
+      count,
+      isAscending,
+      function (status: any, code: any, message: any, msgs: any) {
         console.log(
           "status:" +
             status +
@@ -65,17 +87,53 @@ function App() {
             " message:" +
             message +
             " conv:" +
-            JSON.stringify(userIds)
+            JSON.stringify(msgs)
         );
       }
     );
-  });
+  };
+  const onSendMgs = (e: any) => {
+    if (isConnect) {
+      console.log(isConnect);
+      stringeeChat.createConversation(
+        userIds,
+        options,
+        (status: any, code: any, message: any, conv: any) => {
+          console.log(conv);
+          var txtMsg = {
+            type: 1,
+            convId: "conv-vn-1-3QUQ1YWZ4G-1657040438464",
+            message: {
+              content: msg || "",
+              metadata: {
+                key: "value",
+              },
+            },
+          };
+
+          stringeeChat.sendMessage(
+            txtMsg,
+            function (status: any, code: any, message: any, msg: any) {
+              console.log(message);
+              // getMessage(conv?.lastMessage?.conversationId)
+              dispatch({
+                type: "ADD_LIST_MESSAGES",
+                payload: { listId: msg?.content },
+              });
+            }
+          );
+        }
+      );
+      e.preventDefault();
+    } else {
+      console.log("AUTH NOT CONNECTED");
+    }
+    e.preventDefault();
+  };
   const handleClickMessage = () => {
     setIsIcon(!isIcon);
     setIsOpen(!isOpen);
   };
-
-  // console.log("rotate", rotate);
   return (
     <div>
       {isOpen && (
@@ -85,7 +143,7 @@ function App() {
               <input type="text" placeholder="search" />
               <i className="fa fa-search"></i>
             </div>
-            <ul className="list listUl" style={{ listStyleType: "none" }}>
+            <ul className="list">
               <li className="clearfix">
                 <img
                   src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
@@ -260,86 +318,33 @@ function App() {
 
             <div className="chat-history">
               <ul>
-                <li className="clearfix">
-                  <div className="message-data align-right">
-                    <span className="message-data-time">10:10 AM, Today</span>{" "}
-                    &nbsp; &nbsp;
-                    <span className="message-data-name">Olia</span>{" "}
-                    <i className="fa fa-circle me"></i>
-                  </div>
-                  <div className="message other-message float-right">
-                    Hi Vincent, how are you? How is the project coming along?
-                  </div>
-                </li>
-
-                <li>
-                  <div className="message-data">
-                    <span className="message-data-name">
-                      <i className="fa fa-circle online"></i> Vincent
-                    </span>
-                    <span className="message-data-time">10:12 AM, Today</span>
-                  </div>
-                  <div className="message my-message">
-                    Are we meeting today? Project has been already finished and
-                    I have results to show you.
-                  </div>
-                </li>
-
-                <li className="clearfix">
-                  <div className="message-data align-right">
-                    <span className="message-data-time">10:14 AM, Today</span>{" "}
-                    &nbsp; &nbsp;
-                    <span className="message-data-name">Olia</span>{" "}
-                    <i className="fa fa-circle me"></i>
-                  </div>
-                  <div className="message other-message float-right">
-                    Well I am not sure. The rest of the team is not here yet.
-                    Maybe in an hour or so? Have you faced any problems at the
-                    last phase of the project?
-                  </div>
-                </li>
-
-                <li>
-                  <div className="message-data">
-                    <span className="message-data-name">
-                      <i className="fa fa-circle online"></i> Vincent
-                    </span>
-                    <span className="message-data-time">10:20 AM, Today</span>
-                  </div>
-                  <div className="message my-message">
-                    Actually everything was fine. I'm very excited to show this
-                    to our team.
-                  </div>
-                </li>
-
-                <li>
-                  <div className="message-data">
-                    <span className="message-data-name">
-                      <i className="fa fa-circle online"></i> Vincent
-                    </span>
-                    <span className="message-data-time">10:31 AM, Today</span>
-                  </div>
-                  <i className="fa fa-circle online"></i>
-                  <i
-                    className="fa fa-circle online"
-                    style={{ color: "#AED2A6" }}
-                  ></i>
-                  <i
-                    className="fa fa-circle online"
-                    style={{ color: ":#DAE9DA" }}
-                  ></i>
-                </li>
+                {mesagesData?.lists?.map((item: any, index: number) => (
+                  <li className="clearfix" key={index}>
+                    <div className="message-data align-right">
+                      <span className="message-data-time">10:10 AM, Today</span>{" "}
+                      &nbsp; &nbsp;
+                      <span className="message-data-name">Olia</span>{" "}
+                      <i className="fa fa-circle me"></i>
+                    </div>
+                    <div className="message other-message float-right">
+                      {item?.content}
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
             <div className="chat-message clearfix">
-              <textarea
-                name="message-to-send"
-                id="message-to-send"
-                placeholder="Type your message"
-              ></textarea>
-              <i className="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;
-              <i className="fa fa-file-image-o"></i>
-              <button>Send</button>
+              <form onSubmit={onSendMgs} method={"post"}>
+                <textarea
+                  onChange={onChangeMsg}
+                  name="message-to-send"
+                  id="message-to-send"
+                  placeholder="Type your message"
+                ></textarea>
+                <i className="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;
+                <i className="fa fa-file-image-o"></i>
+                <button type={"submit"}>Send</button>
+              </form>
             </div>
           </div>
         </div>
@@ -377,6 +382,16 @@ function App() {
       </button>
     </div>
   );
-}
+};
 
-export default App;
+const mapStateToProps = (state: {
+  getMessages: {
+    lists: [];
+  };
+}) => {
+  return {
+    mesagesData: state?.getMessages,
+  };
+};
+
+export default connect(mapStateToProps)(App);
