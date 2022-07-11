@@ -2,14 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import { rootReducer } from '../reduxReducers/rootReducers';
 
-const saveState = (state: { handleLogin: any }) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem('state', serializedState);
-  } catch {
-    // ignore write errors
-  }
-};
+// const saveState = (state: { handleLogin: any }) => {
+//   try {
+//     const serializedState = JSON.stringify(state);
+//     localStorage.setItem('state', serializedState);
+//   } catch {
+//     // ignore write errors
+//   }
+// };
 const loadState = () => {
   try {
     const serializedState = localStorage.getItem('state');

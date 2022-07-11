@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import logo from "./logo.svg";
+import axios from "axios";
 import "./nam.scss";
 // @ts-ignore
 import { StringeeClient, StringeeChat } from "stringee-chat-js-sdk";
@@ -17,12 +18,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
   const [isIcon, setIsIcon] = useState(false);
   const [msg, setMgs] = useState<string>("");
   const [isConnect, setConnect] = useState(false);
-  var userIds = ["user1", "user2"];
-  var options = {
-    name: "Your conversation name",
-    isDistinct: false,
-    isGroup: true,
-  };
+
 
   const [msgcontent, setMgsContent] = useState<any>({});
   let stringeeClient: {
@@ -34,11 +30,25 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
   stringeeClient = new StringeeClient();
 
   stringeeClient.connect(
-    "eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS0ZaZ2dBSEtNNTI4eEdLUDRTNVpXY25YcHdwYmhjYkItMTY1NzM2MDkyMyIsImlzcyI6IlNLRlpnZ0FIS001Mjh4R0tQNFM1Wldjblhwd3BiaGNiQiIsImV4cCI6MTY1OTk1MjkyMywidXNlcklkIjoidGhpbmQ5eCJ9.wXlyhcOPVs0eDLMTPmxZdR6xqsKm0oavcgi7Y5ukTfUsssss"
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InN0cmluZ2VlLWFwaTt2PTEifQ.eyJqdGkiOiJTS1BsWmNoT1FXU3ZoeUR5YUEzUGhEaUlERWJqVmhKcS0xNjU3NTA4MzI2IiwiaXNzIjoiU0tQbFpjaE9RV1N2aHlEeWFBM1BoRGlJREVialZoSnEiLCJleHAiOjE2NTc1NTE1MjYsInVzZXJJZCI6IjQifQ.4dDYSP7-14J5tsqwY-p5-ToFxgnARdoOA2Oah6C-3CI"
   );
 
   // init
   var stringeeChat = new StringeeChat(stringeeClient);
+  // useEffect(()=>{
+  //     axios.post("https://api-v2.stg.antoree.tech/v2/token-stringee",{
+  //
+  //     },{
+  //         headers:{
+  //             authorization:"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiODc1ODkxYjgwMmFlYzk1YTM5MGM5YTk2ZGEyZjE5YWM1YWQ3YWQ3OGQwMDdmNjRmYTA5YjZlOTAxZjliMGRhZjdmMmVjNGU2MmE4ZjdhN2UiLCJpYXQiOjE2NTM4OTg4ODcsIm5iZiI6MTY1Mzg5ODg4NywiZXhwIjoxODExNjY1Mjg3LCJzdWIiOiIxODc1NTUiLCJzY29wZXMiOltdfQ.WrucTDQ5vLaGBmGUg1Xp2gaIhn6xVppDgltHkTsc4EN3VB9-i3rGdcT6vULrI7zscDK202ui7fEgdNDjV7gZNB93rrJOB7puB3yUqmNoEbhIAGsF5SpV2F2HDWqNRKb_DoVjy4pS41osaRuqiYhZm-ESdp8eyuo0x4pxVts86Lh50MB7m-TqrfOcnK0XQcSpLaudFWK4Fmjodn8UAKc8KK480b7AGF9PK2Q82Wy5QK66IvbTredZkQpOvg618KKorBydUQUXgtHe935CQnVSAowjE-_EpUDEPtWy7UdmuY4fXSxShASy4BuK2R2LP4NojtiLb-G-ZCBXuVLOExc6VEHsMsBA6OHm3sIeCwLrgfUauN9dfyDFCpSnTeT1zkSqBVApwHFjCUuUQMeiwZDwVBnF9FCfYdSEWnU5QOYxlQ2beSN009Xyuon23hF0fFupMX2fEwmh4d9lLfglhHv7FqOW-ZjI6OMsMY6tN-OsgGT5oJOxcrAYrck0OJrPwLRZfFu7j_ns2q2I_m8x1fx1kewa_rIhCw8-ODOE1HkM2ORt9NcfBufbTU4NDiHuJJ3Ecw9VwSTRV6RjTIX5Tr025_wtgJK27oMNh-dY5DRJwmo4iX8ajpVMuGHsHpMJCKmGbjgMfoKA192Bz80fY4yYqtzrXyZD2W16pq6TDC6KJ0g"
+  //         }
+  //     }).then((res:any)=>{
+  //         console.log(res)
+  //     },(err:any)=>{
+  //         console.log(err)
+  //     })
+  // },[])
+
 
   var userIds = ["user1", "user2"];
   var options = {
@@ -46,24 +56,20 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
     isDistinct: false,
     isGroup: true,
   };
-  var txtMsg = {
-    type: 1,
-    convId: "YOUR_CONVERSATION_ID",
-    message: {
-      content: "Hello",
-      metadata: {
-        key: "value",
-      },
-    },
-  };
 
-  useEffect(() => {
-    stringeeClient.on("authen", function (res: any) {
-      console.log(res);
-      // khởi tạo stringeeChat ở đây
-      setConnect(true);
+    stringeeClient.on("connect", function (res: any) {
+        stringeeClient.on("authen", function (res: any) {
+            console.log(res)
+            // khởi tạo stringeeChat ở đây
+            setConnect(true);
+        });
+
     });
-  }, []);
+
+
+
+
+
   const onChangeMsg = (e: any) => {
     setMgs(e?.target?.value);
   };
@@ -94,7 +100,9 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
   };
   const onSendMgs = (e: any) => {
     if (isConnect) {
-      console.log(isConnect);
+        // stringeeClient.on("otherdeviceauthen", function (res: any) {
+        //     // khởi tạo stringeeChat ở đây
+        // });
       stringeeChat.createConversation(
         userIds,
         options,
@@ -102,7 +110,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
           console.log(conv);
           var txtMsg = {
             type: 1,
-            convId: "conv-vn-1-3QUQ1YWZ4G-1657040438464",
+            convId: conv?.lastMessage?.conversationId,
             message: {
               content: msg || "",
               metadata: {
@@ -114,12 +122,17 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
           stringeeChat.sendMessage(
             txtMsg,
             function (status: any, code: any, message: any, msg: any) {
-              console.log(message);
               // getMessage(conv?.lastMessage?.conversationId)
               dispatch({
                 type: "ADD_LIST_MESSAGES",
                 payload: { listId: msg?.content },
               });
+                var convId = conv?.lastMessage?.conversationId;
+                var count = 50;
+                var isAscending = false;
+                stringeeChat.getLastMessages(convId, count, isAscending, function (status:any, code:any, message:any, msgs:any) {
+                    console.log(msgs)
+                });
             }
           );
         }
@@ -334,7 +347,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
               </ul>
             </div>
             <div className="chat-message clearfix">
-              <form onSubmit={onSendMgs} method={"post"}>
+              <form  onSubmit={onSendMgs} method={"post"}>
                 <textarea
                   onChange={onChangeMsg}
                   name="message-to-send"
@@ -343,7 +356,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
                 ></textarea>
                 <i className="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;
                 <i className="fa fa-file-image-o"></i>
-                <button type={"submit"}>Send</button>
+                <button   type={"submit"}>Send</button>
               </form>
             </div>
           </div>
@@ -362,6 +375,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
           bottom: "100px",
           right: "30px",
         }}
+
         onClick={handleClickMessage}
       >
         <i
