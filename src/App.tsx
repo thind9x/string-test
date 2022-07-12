@@ -52,6 +52,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
     stringeeClient.on('otherdeviceauthen', function (data) {
         // console.log(data)
     })
+
   var userIds = ["user1", "user2"];
   var options = {
     name: "Your conversation name",
@@ -68,12 +69,28 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
 
     });
 
+    // stringeeClient.on('connect', function () {
+    //     console.log('++++++++++++++ connected to StringeeServer');
+    // });
+    //
+    // stringeeClient.on('authen', function (res) {
+    //     console.log('authen', res);
+    // });
+
+    stringeeClient.on('disconnect', function () {
+        console.log('++++++++++++++ disconnected');
+    });
 
 
 
 
-  const onChangeMsg = (e: any) => {
-    setMgs(e?.target?.value);
+    const onChangeMsg = (e: any) => {
+      setMgs(e?.target?.value);
+
+      // stringeeClient.on('onObjectChange', function (data) {
+      //     console.log(data)
+      //
+      // })
   };
   const msgArr = [] as any;
   const getMessage = async (data: any) => {
@@ -100,6 +117,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
       }
     );
   };
+  console.log(mesagesData?.lists)
   const onSendMgs = (e: any) => {
     if (isConnect) {
         // stringeeClient.on("otherdeviceauthen", function (res: any) {
@@ -125,6 +143,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
             txtMsg,
             function (status: any, code: any, message: any, msg: any) {
               // getMessage(conv?.lastMessage?.conversationId)
+                console.log(msg)
               dispatch({
                 type: "ADD_LIST_MESSAGES",
                 payload: { listId: msg?.content },
