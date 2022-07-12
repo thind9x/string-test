@@ -20,6 +20,7 @@
     "react-scripts": "5.0.1",
     "redux": "^4.2.0",
     "stringee-chat-js-sdk": "^0.2.0",
+    "stringee-react-native": "^1.4.30",
     "typescript": "^4.7.3",
     "web-vitals": "^2.1.4"
   },

@@ -30,7 +30,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
   stringeeClient = new StringeeClient();
 
   stringeeClient.connect(
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImN0eSI6InN0cmluZ2VlLWFwaTt2PTEifQ.eyJqdGkiOiJTS1BsWmNoT1FXU3ZoeUR5YUEzUGhEaUlERWJqVmhKcS0xNjU3NTA4MzI2IiwiaXNzIjoiU0tQbFpjaE9RV1N2aHlEeWFBM1BoRGlJREVialZoSnEiLCJleHAiOjE2NTc1NTE1MjYsInVzZXJJZCI6IjQifQ.4dDYSP7-14J5tsqwY-p5-ToFxgnARdoOA2Oah6C-3CI"
+      "eyJjdHkiOiJzdHJpbmdlZS1hcGk7dj0xIiwidHlwIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJqdGkiOiJTS0ZaZ2dBSEtNNTI4eEdLUDRTNVpXY25YcHdwYmhjYkItMTY1NzYwNzI0NCIsImlzcyI6IlNLRlpnZ0FIS001Mjh4R0tQNFM1Wldjblhwd3BiaGNiQiIsImV4cCI6MTY2MDE5OTI0NCwidXNlcklkIjoidGhpOXgifQ.ga3EFOzpnsx8dCIGPIFOJZSWvPEb4yE5gZUDqObPj8U"
   );
 
   // init
@@ -49,7 +49,9 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
   //     })
   // },[])
 
-
+    stringeeClient.on('otherdeviceauthen', function (data) {
+        // console.log(data)
+    })
   var userIds = ["user1", "user2"];
   var options = {
     name: "Your conversation name",
