@@ -68,6 +68,9 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
         });
 
     });
+    stringeeChat.on('onObjectChange', (res:any) => {
+        console.log('+++ onObjectChange on Stringee object change ', res);
+    });
 
     // stringeeClient.on('connect', function () {
     //     console.log('++++++++++++++ connected to StringeeServer');
@@ -87,10 +90,6 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
     const onChangeMsg = (e: any) => {
       setMgs(e?.target?.value);
 
-      // stringeeClient.on('onObjectChange', function (data) {
-      //     console.log(data)
-      //
-      // })
   };
   const msgArr = [] as any;
   const getMessage = async (data: any) => {
