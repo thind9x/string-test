@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import logo from "./logo.svg";
 import axios from "axios";
+import { useForm, SubmitHandler } from "react-hook-form";
+import  dayjs from "dayjs"
+import {timeConverter} from "./feature/timeStampConverter";
+
 import "./nam.scss";
 // @ts-ignore
 import { StringeeClient, StringeeChat } from "stringee-chat-js-sdk";
@@ -12,7 +16,9 @@ interface AppProps {
     lists: [];
   };
 }
-
+type Inputs = {
+    messages: string,
+};
 const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isIcon, setIsIcon] = useState(false);
@@ -35,19 +41,7 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
 
   // init
   var stringeeChat = new StringeeChat(stringeeClient);
-  // useEffect(()=>{
-  //     axios.post("https://api-v2.stg.antoree.tech/v2/token-stringee",{
-  //
-  //     },{
-  //         headers:{
-  //             authorization:"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiODc1ODkxYjgwMmFlYzk1YTM5MGM5YTk2ZGEyZjE5YWM1YWQ3YWQ3OGQwMDdmNjRmYTA5YjZlOTAxZjliMGRhZjdmMmVjNGU2MmE4ZjdhN2UiLCJpYXQiOjE2NTM4OTg4ODcsIm5iZiI6MTY1Mzg5ODg4NywiZXhwIjoxODExNjY1Mjg3LCJzdWIiOiIxODc1NTUiLCJzY29wZXMiOltdfQ.WrucTDQ5vLaGBmGUg1Xp2gaIhn6xVppDgltHkTsc4EN3VB9-i3rGdcT6vULrI7zscDK202ui7fEgdNDjV7gZNB93rrJOB7puB3yUqmNoEbhIAGsF5SpV2F2HDWqNRKb_DoVjy4pS41osaRuqiYhZm-ESdp8eyuo0x4pxVts86Lh50MB7m-TqrfOcnK0XQcSpLaudFWK4Fmjodn8UAKc8KK480b7AGF9PK2Q82Wy5QK66IvbTredZkQpOvg618KKorBydUQUXgtHe935CQnVSAowjE-_EpUDEPtWy7UdmuY4fXSxShASy4BuK2R2LP4NojtiLb-G-ZCBXuVLOExc6VEHsMsBA6OHm3sIeCwLrgfUauN9dfyDFCpSnTeT1zkSqBVApwHFjCUuUQMeiwZDwVBnF9FCfYdSEWnU5QOYxlQ2beSN009Xyuon23hF0fFupMX2fEwmh4d9lLfglhHv7FqOW-ZjI6OMsMY6tN-OsgGT5oJOxcrAYrck0OJrPwLRZfFu7j_ns2q2I_m8x1fx1kewa_rIhCw8-ODOE1HkM2ORt9NcfBufbTU4NDiHuJJ3Ecw9VwSTRV6RjTIX5Tr025_wtgJK27oMNh-dY5DRJwmo4iX8ajpVMuGHsHpMJCKmGbjgMfoKA192Bz80fY4yYqtzrXyZD2W16pq6TDC6KJ0g"
-  //         }
-  //     }).then((res:any)=>{
-  //         console.log(res)
-  //     },(err:any)=>{
-  //         console.log(err)
-  //     })
-  // },[])
+
 
     stringeeClient.on('otherdeviceauthen', function (data) {
         // console.log(data)
@@ -62,37 +56,73 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
 
     stringeeClient.on("connect", function (res: any) {
         stringeeClient.on("authen", function (res: any) {
-            console.log(res)
+            // console.log(res)
             // khởi tạo stringeeChat ở đây
             setConnect(true);
         });
 
     });
     stringeeChat.on('onObjectChange', (res:any) => {
-        console.log('+++ onObjectChange on Stringee object change ', res);
+        // console.log('+++ onObjectChange on Stringee object change ', res);
     });
-
-    // stringeeClient.on('connect', function () {
-    //     console.log('++++++++++++++ connected to StringeeServer');
-    // });
-    //
-    // stringeeClient.on('authen', function (res) {
-    //     console.log('authen', res);
-    // });
 
     stringeeClient.on('disconnect', function () {
-        console.log('++++++++++++++ disconnected');
+        // console.log('++++++++++++++ disconnected');
     });
+    const times = timeConverter(1659079791357);
+    console.log(times)
 
-
-
+    var s = new Date(1659079791357).toLocaleDateString("vi-VN")
+    console.log(s)
 
     const onChangeMsg = (e: any) => {
       setMgs(e?.target?.value);
 
   };
-  const msgArr = [] as any;
-  const getMessage = async (data: any) => {
+    const { register, handleSubmit, watch,resetField,reset, formState: { errors } } = useForm<Inputs>();
+    const onSubmit: SubmitHandler<Inputs> = data => {
+        if (isConnect) {
+            stringeeChat.createConversation(
+                userIds,
+                options,
+                (status: any, code: any, message: any, conv: any) => {
+                    var txtMsg = {
+                        type: 1,
+                        convId: conv?.lastMessage?.conversationId,
+                        message: {
+                            content: data?.messages || "",
+                            metadata: {
+                                key: "value",
+                            },
+                        },
+                    };
+
+                    stringeeChat.sendMessage(
+                        txtMsg,
+                        function (status: any, code: any, message: any, msg: any) {
+                            // getMessage(conv?.lastMessage?.conversationId)
+                            console.log(msg )
+                            dispatch({
+                                type: "ADD_LIST_MESSAGES",
+                                payload: { listId: {"content":msg?.content,"sender":msg?.sender,"createdAt":msg?.createdAt }},
+                            });
+                            reset();
+                            var convId = conv?.lastMessage?.conversationId;
+                            var count = 50;
+                            var isAscending = false;
+                            stringeeChat.getLastMessages(convId, count, isAscending, function (status:any, code:any, message:any, msgs:any) {
+                                console.log(msgs)
+                            });
+                        }
+                    );
+                }
+            );
+        } else {
+            console.log("AUTH NOT CONNECTED");
+        }
+    }
+
+    const getMessage = async (data: any) => {
     var convId = data;
     var count = 50;
     var isAscending = false;
@@ -116,60 +146,15 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
       }
     );
   };
-  console.log(mesagesData?.lists)
-  const onSendMgs = (e: any) => {
-    if (isConnect) {
-        // stringeeClient.on("otherdeviceauthen", function (res: any) {
-        //     // khởi tạo stringeeChat ở đây
-        // });
-      stringeeChat.createConversation(
-        userIds,
-        options,
-        (status: any, code: any, message: any, conv: any) => {
-          console.log(conv);
-          var txtMsg = {
-            type: 1,
-            convId: conv?.lastMessage?.conversationId,
-            message: {
-              content: msg || "",
-              metadata: {
-                key: "value",
-              },
-            },
-          };
 
-          stringeeChat.sendMessage(
-            txtMsg,
-            function (status: any, code: any, message: any, msg: any) {
-              // getMessage(conv?.lastMessage?.conversationId)
-                console.log(msg)
-              dispatch({
-                type: "ADD_LIST_MESSAGES",
-                payload: { listId: msg?.content },
-              });
-                var convId = conv?.lastMessage?.conversationId;
-                var count = 50;
-                var isAscending = false;
-                stringeeChat.getLastMessages(convId, count, isAscending, function (status:any, code:any, message:any, msgs:any) {
-                    console.log(msgs)
-                });
-            }
-          );
-        }
-      );
-      e.preventDefault();
-    } else {
-      console.log("AUTH NOT CONNECTED");
-    }
-    e.preventDefault();
-  };
   const handleClickMessage = () => {
     setIsIcon(!isIcon);
     setIsOpen(!isOpen);
   };
+  console.log(mesagesData?.lists)
   return (
     <div>
-      {isOpen && (
+      {!isOpen && (
         <div className="container clearfix">
           <div className="people-list" id="people-list">
             <div className="search">
@@ -354,23 +339,23 @@ const App: React.FC<AppProps> = ({ dispatch, mesagesData }) => {
                 {mesagesData?.lists?.map((item: any, index: number) => (
                   <li className="clearfix" key={index}>
                     <div className="message-data align-right">
-                      <span className="message-data-time">10:10 AM, Today</span>{" "}
+                      <span className="message-data-time">{timeConverter(item?.createAt)}, Today</span>{" "}
                       &nbsp; &nbsp;
-                      <span className="message-data-name">Olia</span>{" "}
+                      <span className="message-data-name">{item?.sender}</span>{" "}
                       <i className="fa fa-circle me"></i>
                     </div>
                     <div className="message other-message float-right">
-                      {item?.content}
+                      {item?.content?.content}
                     </div>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="chat-message clearfix">
-              <form  onSubmit={onSendMgs} method={"post"}>
+              <form  onSubmit={handleSubmit(onSubmit)}  method={"post"}>
                 <textarea
-                  onChange={onChangeMsg}
-                  name="message-to-send"
+                  {...register("messages", { required: true })}
+                  name="messages"
                   id="message-to-send"
                   placeholder="Type your message"
                 ></textarea>
